@@ -33,6 +33,7 @@ public class Calculator{
         op_index.add(new ArrayList<>()); //1 - -
         op_index.add(new ArrayList<>()); //2 - /
         op_index.add(new ArrayList<>()); //3 - *
+        op_index.add(new ArrayList<>()); //4 - ()
 
         int counter = 0;
 
@@ -60,6 +61,11 @@ public class Calculator{
                 temp.add(counter);
                 op_index.set(3, temp);
 
+            }
+            if(s == '(' || s == ')'){
+                ArrayList<Integer> temp = op_index.get(4);
+                temp.add(counter);
+                op_index.set(4, temp);
             }
             counter++;
 
