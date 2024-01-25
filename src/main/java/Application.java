@@ -1,13 +1,15 @@
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Application {
     //надо сделать функцию которая будет искать */+- и определять что будет выполняться первым, расположить индексы в массиве в порядке приоритетов.
-    static char[] op_search(String str){ //создание массива из операций
-        char[] operations_i;
+    static int[] op_search(String[] c_str){ //создание массива из операций
+        int[] operations_i;
         int counter = 0;
-        char[] c_str = str.toCharArray();
-        for(char a : c_str){
-            if(a == '+' || a =='-' || a == '*' || a  == '/'){
+
+        for(String a : c_str){
+
+            if(a.equals("+") || a.equals("-") || a.equals("*") || a.equals("/")){
 
                 counter++;
 
@@ -15,14 +17,47 @@ public class Application {
 
 
         }
-        operations_i = new char[counter];
+        operations_i = new int[counter];
         counter = 0;
 
         for(int i = 0; i < c_str.length; i++){
 
-            if(c_str[i] == '+' || c_str[i] == '-' || c_str[i] == '*' || c_str[i]  == '/'){
+            if(c_str[i].equals("/")){
 
-                operations_i[counter] = c_str[i];
+                operations_i[counter] = i;
+                counter++;
+
+            }
+
+
+        }
+        for(int i = 0; i < c_str.length; i++){
+
+            if(c_str[i].equals("*")){
+
+                operations_i[counter] = i;
+                counter++;
+
+            }
+
+
+        }
+        for(int i = 0; i < c_str.length; i++){
+
+            if(c_str[i].equals("-")){
+
+                operations_i[counter] = i;
+                counter++;
+
+            }
+
+
+        }
+        for(int i = 0; i < c_str.length; i++){
+
+            if(c_str[i].equals("+")){
+
+                operations_i[counter] = i;
                 counter++;
 
             }
@@ -32,7 +67,16 @@ public class Application {
         return operations_i;
     }
 
-    static String ready_to_split(String str){ //удаление операций из строки
+    static ArrayList<String> to_ArrayList(String[] arr){
+        ArrayList<String> converted = new ArrayList<>();
+
+        for(int i = 0; i < arr.length;i++){
+            converted.add(arr[i]);
+        }
+
+        return converted;
+    }
+    static String ready_to_split(String str){
         String str_without_op = "";
         char[] c_str = str.toCharArray();
 
@@ -40,7 +84,7 @@ public class Application {
 
             if(s == '+' || s == '-' || s == '*' || s  == '/'){
 
-                str_without_op = str_without_op + " ";
+                str_without_op = str_without_op + " " + s + " ";
 
             }else if(s != ' '){
 
@@ -51,27 +95,164 @@ public class Application {
         }
         return str_without_op;
     }
-    static boolean run(char[] arr, String str){
+    static boolean run(String str){
 
-        String[] numbers_str = str.split(" "); //числа в string
-        double[] numbers = new double[numbers_str.length];//числа в double
-        double[] results = new double[numbers_str.length-1];//результаты
+        String[] exp = str.split(" "); //числа в string
+        ArrayList<String> exp_list = to_ArrayList(exp);
+        int[] operations = op_search(exp);
+        double result = 0;
 
-        for(int i = 0; i < numbers_str.length; i++){ // перевод чисел в double
-            try {
+        try {
+            for (int i = 0; i < operations.length; i++) {
 
-                numbers[i] = Double.parseDouble(numbers_str[i]);
+                if (exp_list.get(operations[i]).equals("/")){
+                    if(exp_list.get(operations[i] - 1).equals(" ") && exp_list.get(operations[i] + 1).equals(" ")) {
 
-            } catch (Exception e){
+                        result = Double.parseDouble(exp_list.get(operations[i] - 2)) / Double.parseDouble(exp_list.get(operations[i] + 2));
+                        exp_list.set(operations[i], Double.toString(result));
+                        exp_list.set(operations[i] + 2, " ");
+                        exp_list.set(operations[i] - 2, " ");
 
-                System.out.println("Вы ввели неверный символ!");
-                return false;
+                    } else if(exp_list.get(operations[i] - 1).equals(" ") && !exp_list.get(operations[i] + 1).equals(" ")){
 
+                        result = Double.parseDouble(exp_list.get(operations[i] - 2)) / Double.parseDouble(exp_list.get(operations[i] + 1));
+                        exp_list.set(operations[i], Double.toString(result));
+                        exp_list.set(operations[i] + 1, " ");
+                        exp_list.set(operations[i] - 2, " ");
+
+                    } else if(!exp_list.get(operations[i] - 1).equals(" ") && exp_list.get(operations[i] + 1).equals(" ")){
+
+                        result = Double.parseDouble(exp_list.get(operations[i] - 1)) / Double.parseDouble(exp_list.get(operations[i] + 2));
+                        exp_list.set(operations[i], Double.toString(result));
+                        exp_list.set(operations[i] + 2, " ");
+                        exp_list.set(operations[i] - 1, " ");
+
+
+                    } else {
+
+                        result = Double.parseDouble(exp_list.get(operations[i] - 1)) / Double.parseDouble(exp_list.get(operations[i] + 1));
+                        exp_list.set(operations[i], Double.toString(result));
+                        exp_list.set(operations[i] + 1, " ");
+                        exp_list.set(operations[i] - 1, " ");
+
+
+                    }
+                }
+                if (exp_list.get(operations[i]).equals("*")){
+
+                    if(exp_list.get(operations[i] - 1).equals(" ") && exp_list.get(operations[i] + 1).equals(" ")) {
+
+                        result = Double.parseDouble(exp_list.get(operations[i] - 2)) * Double.parseDouble(exp_list.get(operations[i] + 2));
+                        exp_list.set(operations[i], Double.toString(result));
+                        exp_list.set(operations[i] + 2, " ");
+                        exp_list.set(operations[i] - 2, " ");
+
+                    } else if(exp_list.get(operations[i] - 1).equals(" ") && !exp_list.get(operations[i] + 1).equals(" ")){
+
+                        result = Double.parseDouble(exp_list.get(operations[i] - 2)) * Double.parseDouble(exp_list.get(operations[i] + 1));
+                        exp_list.set(operations[i], Double.toString(result));
+                        exp_list.set(operations[i] + 1, " ");
+                        exp_list.set(operations[i] - 2, " ");
+
+                    } else if(!exp_list.get(operations[i] - 1).equals(" ") && exp_list.get(operations[i] + 1).equals(" ")){
+
+                        result = Double.parseDouble(exp_list.get(operations[i] - 1)) * Double.parseDouble(exp_list.get(operations[i] + 2));
+                        exp_list.set(operations[i], Double.toString(result));
+                        exp_list.set(operations[i] + 2, " ");
+                        exp_list.set(operations[i] - 1, " ");
+
+
+                    } else {
+
+                        result = Double.parseDouble(exp_list.get(operations[i] - 1)) * Double.parseDouble(exp_list.get(operations[i] + 1));
+                        exp_list.set(operations[i], Double.toString(result));
+                        exp_list.set(operations[i] + 1, " ");
+                        exp_list.set(operations[i] - 1, " ");
+
+
+
+                    }
+
+                }
+                if (exp_list.get(operations[i]).equals("+")){
+
+                    if(exp_list.get(operations[i] - 1).equals(" ") && exp_list.get(operations[i] + 1).equals(" ")) {
+
+                        result = Double.parseDouble(exp_list.get(operations[i] - 2)) + Double.parseDouble(exp_list.get(operations[i] + 2));
+                        exp_list.set(operations[i], Double.toString(result));
+                        exp_list.set(operations[i] + 2, " ");
+                        exp_list.set(operations[i] - 2, " ");
+
+                    } else if(exp_list.get(operations[i] - 1).equals(" ") && !exp_list.get(operations[i] + 1).equals(" ")){
+
+                        result = Double.parseDouble(exp_list.get(operations[i] - 2)) + Double.parseDouble(exp_list.get(operations[i] + 1));
+                        exp_list.set(operations[i], Double.toString(result));
+                        exp_list.set(operations[i] + 1, " ");
+                        exp_list.set(operations[i] - 2, " ");
+
+                    } else if(!exp_list.get(operations[i] - 1).equals(" ") && exp_list.get(operations[i] + 1).equals(" ")){
+
+                        result = Double.parseDouble(exp_list.get(operations[i] - 1)) + Double.parseDouble(exp_list.get(operations[i] + 2));
+                        exp_list.set(operations[i], Double.toString(result));
+                        exp_list.set(operations[i] + 2, " ");
+                        exp_list.set(operations[i] - 1, " ");
+
+
+                    } else {
+
+                        result = Double.parseDouble(exp_list.get(operations[i] - 1)) + Double.parseDouble(exp_list.get(operations[i] + 1));
+                        exp_list.set(operations[i], Double.toString(result));
+                        exp_list.set(operations[i] + 1, " ");
+                        exp_list.set(operations[i] - 1, " ");
+
+
+
+                    }
+
+                }
+
+                if (exp_list.get(operations[i]).equals("-")){
+
+                    if(exp_list.get(operations[i] - 1).equals(" ") && exp_list.get(operations[i] + 1).equals(" ")) {
+
+                        result = Double.parseDouble(exp_list.get(operations[i] - 2)) - Double.parseDouble(exp_list.get(operations[i] + 2));
+                        exp_list.set(operations[i], Double.toString(result));
+                        exp_list.set(operations[i] + 2, " ");
+                        exp_list.set(operations[i] - 2, " ");
+
+                    } else if(exp_list.get(operations[i] - 1).equals(" ") && !exp_list.get(operations[i] + 1).equals(" ")){
+
+                        result = Double.parseDouble(exp_list.get(operations[i] - 2)) - Double.parseDouble(exp_list.get(operations[i] + 1));
+                        exp_list.set(operations[i], Double.toString(result));
+                        exp_list.set(operations[i] + 1, " ");
+                        exp_list.set(operations[i] - 2, " ");
+
+                    } else if(!exp_list.get(operations[i] - 1).equals(" ") && exp_list.get(operations[i] + 1).equals(" ")){
+
+                        result = Double.parseDouble(exp_list.get(operations[i] - 1)) - Double.parseDouble(exp_list.get(operations[i] + 2));
+                        exp_list.set(operations[i], Double.toString(result));
+                        exp_list.set(operations[i] + 2, " ");
+                        exp_list.set(operations[i] - 1, " ");
+
+
+                    } else {
+
+                        result = Double.parseDouble(exp_list.get(operations[i] - 1)) - Double.parseDouble(exp_list.get(operations[i] + 1));
+                        exp_list.set(operations[i], Double.toString(result));
+                        exp_list.set(operations[i] + 1, " ");
+                        exp_list.set(operations[i] - 1, " ");
+
+
+
+                    }
+                }
             }
+            System.out.println(result);
+        }catch (Exception e){
 
+            System.out.println("Ошибка!");
+            return false;
         }
-
-        double res = 0;
 
         return true;
     }
@@ -79,7 +260,8 @@ public class Application {
 
         Scanner input = new Scanner(System.in);
         String expression = input.nextLine();
-        run(op_search(expression), ready_to_split(expression));
 
+        run(ready_to_split(expression));
     }
+
 }
